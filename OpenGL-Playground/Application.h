@@ -9,12 +9,11 @@ public:
 	void run();
 
 private:
+	int width, height;
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-	void initWindow(int width, int height);
+	void initWindow();
 	void initOpenGL();
 
 	GLFWwindow* window = nullptr;
-	int width;
-	int height;
 };

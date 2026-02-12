@@ -9,8 +9,11 @@
 
 static Renderer renderer;
 
-Application::Application(int width, int height) {
-	initWindow(width, height);
+Application::Application(int w, int h) {
+	width = w;
+	height = h;
+
+	initWindow();
 	initOpenGL();
 }
 
@@ -18,7 +21,7 @@ Application::~Application() {
 	glfwTerminate();
 }
 
-void Application::initWindow(int width, int height) {
+void Application::initWindow() {
 	/* Initialize the library */
 	if (!glfwInit()) {
 		std::cout << "Failed to initialize GLFW" << std::endl;
@@ -42,6 +45,9 @@ void Application::initWindow(int width, int height) {
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
+	/* VSync */
+	glfwSwapInterval(0);
+
 	/* Makes an initial call. Then for every window size update creates a callback */
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 }
@@ -52,7 +58,7 @@ void Application::initOpenGL() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		exit(-1);
 	}
-	renderer.init();
+	renderer.init(width, height);
 }
 
 /* Called when the window size changes.
