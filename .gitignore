@@ -1,0 +1,8 @@
+.vs
+x64/
+
+OpenGL-Playground/lib
+
+OpenGL-Playground/include/glad
+OpenGL-Playground/include/GLFW
+OpenGL-Playground/include/KHR

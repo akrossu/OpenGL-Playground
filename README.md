@@ -1,0 +1,1 @@
+This repository is mostly for my computer graphics class
