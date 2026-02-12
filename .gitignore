@@ -6,5 +6,6 @@ OpenGL-Playground/lib
 OpenGL-Playground/include/glad
 OpenGL-Playground/include/GLFW
 OpenGL-Playground/include/KHR
+OpenGL-Playground/include/glm
 
 **/glad.c
