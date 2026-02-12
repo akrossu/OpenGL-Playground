@@ -13,13 +13,26 @@ const char* vertexShaderSource = "#version 330 core\n"
 "}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
+"uniform vec2 u_resolution;\n"
+"uniform float u_time;\n"
 "out vec4 FragColor;\n"
+"#define M_PI 3.1415926535897932384626433832795\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   vec2 uv = gl_FragCoord.xy / u_resolution.xy;\n"
+"   float t = u_time;\n"
+"   vec3 color = vec3(\n"
+"       sin(uv.x * (M_PI*2) + t) * 0.5 + 0.5,\n"
+"       sin(uv.x * (M_PI*2) + t + 2.094) * 0.5 + 0.5,\n"
+"       sin(uv.x * (M_PI*2) + t + 4.188) * 0.5 + 0.5\n"
+"   );\n"
+"   FragColor = vec4(color, 1.0f);\n"
 "}\n\0";
 
-void Renderer::init() {
+void Renderer::init(int width, int height) {
+	widthRef = width;
+	heightRef = height;
+
     glClearColor(0.12f, 0.1f, 0.16f, 1.0f);
 
     setupShaders();
@@ -143,6 +156,10 @@ void Renderer::render() {
 	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)widthRef / (float)heightRef, 0.1f, 100.0f);
 
+	// Update uniforms
+
+	glUniform2f(glGetUniformLocation(shaderProgram, "u_resolution"), (float)widthRef, (float)heightRef);
+	glUniform1f(glGetUniformLocation(shaderProgram, "u_time"), time);
 
 	// Set the transformation matrices
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
