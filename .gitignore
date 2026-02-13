@@ -10,7 +10,11 @@ intermediate/
 OpenGL-Playground/lib
 
 # Includes
-OpenGL-Playground/include/external
+OpenGL-Playground/include/glad
+OpenGL-Playground/include/GLFW
+OpenGL-Playground/include/KHR
+OpenGL-Playground/include/glm
+OpenGL-Playground/include/stb
 
 # Impl
 **/glad.c
