@@ -1,11 +1,19 @@
-.vs
-x64/
+# User
+.vs/
+*.user
 
+# Build
+bin/
+intermediate/
+
+# Lib
 OpenGL-Playground/lib
 
+# Includes
 OpenGL-Playground/include/glad
 OpenGL-Playground/include/GLFW
 OpenGL-Playground/include/KHR
 OpenGL-Playground/include/glm
 
+# Impl
 **/glad.c
