@@ -42,6 +42,10 @@ void Application::initWindow() {
 		exit(-1);
 	}
 
+	//GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	//const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	//window = glfwCreateWindow(mode->width, mode->height, "Hello World", monitor, NULL); // fullscreen windowed
+
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 

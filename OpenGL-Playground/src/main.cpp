@@ -1,7 +1,7 @@
 #include "Application.h"
 
 int main(void) {
-    Application app(640, 480);
+    Application app(1600, 900);
     app.run();
     return 0;
 }
