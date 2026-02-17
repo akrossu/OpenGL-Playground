@@ -161,12 +161,14 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Platform.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Application.h" />
     <ClInclude Include="include\Platform.h" />
     <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
