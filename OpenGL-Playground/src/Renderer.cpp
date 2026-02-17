@@ -7,38 +7,6 @@
 
 #include "Renderer.h"
 
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec2 aTexCoord;"
-"out vec2 v_TexCoord;\n"
-"uniform mat4 model;\n"
-"uniform mat4 view;\n"
-"uniform mat4 proj;\n"
-"void main()\n"
-"{\n"
-"   v_TexCoord = aTexCoord;\n"
-"   gl_Position = proj * view * model * vec4(aPos, 1.0);\n"
-"}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-//"uniform vec2 u_resolution;\n"
-//"uniform float u_time;\n"
-//"#define M_PI 3.1415926535897932384626433832795\n"
-"out vec4 FragColor;\n"
-"in vec2 v_TexCoord;\n"
-"uniform sampler2D u_Texture;\n"
-"void main()\n"
-"{\n"
-//"   vec2 uv = gl_FragCoord.xy / u_resolution.xy;\n"
-//"   float t = u_time;\n"
-//"   vec3 color = vec3(\n"
-//"       sin(uv.x * (M_PI*2) + t) * 0.5 + 0.5,\n"
-//"       sin(uv.x * (M_PI*2) + t + 2.094) * 0.5 + 0.5,\n"
-//"       sin(uv.x * (M_PI*2) + t + 4.188) * 0.5 + 0.5\n"
-//"   );\n"
-"   FragColor = texture(u_Texture, v_TexCoord);\n"
-"}\n\0";
-
 void Renderer::init(int width, int height) {
 	widthRef = width;
 	heightRef = height;
@@ -48,51 +16,28 @@ void Renderer::init(int width, int height) {
 
     glClearColor(0.129f, 0.157f, 0.188f, 1.0f);
 
-    setupShaders();
     setupBuffers();
 
-    texture = new Texture("assets/textures/texture.jpg", false);
-}
+    Texture* texture1 = new Texture("assets/textures/texture1.jpg", false);
+    Texture* texture2 = new Texture("assets/textures/texture2.jpg", false);
 
-void Renderer::setupShaders() {
-    // Vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+    Shader* shader1 = new Shader("assets/shaders/vertex1.glsl", "assets/shaders/fragment1.glsl");
+    Shader* shader2 = new Shader("assets/shaders/vertex2.glsl", "assets/shaders/fragment2.glsl");
 
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "Vertex Shader Compilation Failed:\n" << infoLog << std::endl;
-    }
+    Objects obj1 = {
+        shader1,
+        texture1,
+        glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f))
+    };
 
-    // Fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    Objects obj2 = {
+        shader2,
+        texture2,
+        glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f))
+	};
 
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "Fragment Shader Compilation Failed:\n" << infoLog << std::endl;
-    }
-
-    // Shader program
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "Shader Program Linking Failed:\n" << infoLog << std::endl;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    objects.push_back(obj1);
+	objects.push_back(obj2);
 }
 
 void Renderer::setupBuffers() {
@@ -164,7 +109,7 @@ void Renderer::setupBuffers() {
 
 void Renderer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(shaderProgram);
+    glBindVertexArray(VAO);
 
 	float time = static_cast<float>(glfwGetTime());
 
@@ -174,20 +119,25 @@ void Renderer::render() {
 	glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)widthRef / (float)heightRef, 0.1f, 100.0f);
 	model = glm::rotate(model, time * glm::radians(45.0f), glm::vec3(0.25f, 0.25f, 0.5f));
 
-	// Update uniforms
-	glUniform2f(glGetUniformLocation(shaderProgram, "u_resolution"), (float)widthRef, (float)heightRef);
-	glUniform1f(glGetUniformLocation(shaderProgram, "u_time"), time);
+    for (auto& obj : objects) {
+        obj.shader->bind();
 
-	// Set the transformation matrices
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "proj"), 1, GL_FALSE, glm::value_ptr(proj));
+        glm::mat4 model = glm::rotate(obj.model, time * glm::radians(45.0f), glm::vec3(0.25f, 0.25f, 0.5f));
+        
+		obj.shader->setUniform("model", model);
+        obj.shader->setUniform("view", view);
+        obj.shader->setUniform("proj", proj);
 
-    // Bind texture
-    texture->bind(0);
-    glUniform1i(glGetUniformLocation(shaderProgram, "u_Texture"), 0);
+		obj.shader->setUniform("u_resolution", glm::vec2(widthRef, heightRef));
+		obj.shader->setUniform("u_time", time);
 
-    /*  */
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+        if (obj.texture) {
+            obj.texture->bind(0);
+			obj.shader->setUniform("u_Texture", 0);
+        }
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+
+	glBindVertexArray(0);
 }
